@@ -2,27 +2,32 @@ const express = require('express');
 
 const app = express();
 
+const { adminAuth, userAuth } = require('./middlewares/auth');
+
 const port = 5000;
 
-app.use(
-  '/hello/2',
-  (req, res, next) => {
-    console.log('Router 1');
-    // res.send('Hello world 2 !');
-    next();
-  },
-  (req, res) => {
-    console.log('Router 2');
-    res.send('Hello world !');
-  }
-);
+app.use('/admin', adminAuth);
 
-app.use('/test', (req, res, next) => {
-  res.send('Test Page');
+app.get('/admin/getAllData', (req, res) => {
+  console.log('getData route called');
+  res.send('Admin data');
 });
 
-app.use('/', (req, res) => {
-  res.send('This is a homepage !');
+app.get('/admin/deleteUser', (req, res) => {
+  console.log('deleteUser route called');
+  res.send('Deleted Sucessfully');
+});
+
+app.get('/user/login', (req, res) => {
+  console.log('login route called');
+  res.send('User logged in');
+});
+
+app.use('/user', userAuth);
+
+app.get('/user/getData', (req, res) => {
+  console.log('getData route called');
+  res.send('User data sent');
 });
 
 app.listen(port, () => {
