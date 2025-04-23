@@ -1,34 +1,39 @@
 const express = require('express');
 
-const app = express();
+const connectDB = require('./config/database');
 
-const { adminAuth, userAuth } = require('./middlewares/auth');
+const app = express();
 
 const port = 5000;
 
-app.use('/admin', adminAuth);
+const User = require('./models/userModel');
 
-app.get('/admin/getAllData', (req, res) => {
-  console.log('getData route called');
-  res.send('Admin data');
+app.post('/signup', async (req, res) => {
+  const userObj = {
+    firstName: 'Akshay',
+    lastName: 'Saini',
+    email: 'akshay@gmail.com',
+    password: 'akshay12',
+    phone: '9876543210',
+    gender: 'Male',
+  };
+
+  const user = new User(userObj);
+  try {
+    const savedUser = await user.save();
+    res.status(200).send('user Saved successfully' + savedUser);
+  } catch (error) {
+    res.status(500).send('Error saving user ' + error.message);
+  }
 });
 
-app.get('/admin/deleteUser', (req, res) => {
-  console.log('deleteUser route called');
-  res.send('Deleted Sucessfully');
-});
-
-app.get('/user/login', (req, res) => {
-  console.log('login route called');
-  res.send('User logged in');
-});
-
-app.use('/user', userAuth);
-
-app.get('/user/getData', (req, res) => {
-  console.log('getData route called');
-  res.send('User data sent');
-});
+connectDB()
+  .then(() => {
+    console.log('MongoDB connected successfully');
+  })
+  .catch((err) => {
+    console.error('MongoDB connection failed:', err);
+  });
 
 app.listen(port, () => {
   console.log('Server is running at port 5000');
