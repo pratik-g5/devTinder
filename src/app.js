@@ -8,17 +8,10 @@ const port = 5000;
 
 const User = require('./models/userModel');
 
-app.post('/signup', async (req, res) => {
-  const userObj = {
-    firstName: 'Akshay',
-    lastName: 'Saini',
-    email: 'akshay@gmail.com',
-    password: 'akshay12',
-    phone: '9876543210',
-    gender: 'Male',
-  };
+app.use(express.json());
 
-  const user = new User(userObj);
+app.post('/signup', async (req, res) => {
+  const user = new User(req.body);
   try {
     const savedUser = await user.save();
     res.status(200).send('user Saved successfully' + savedUser);
