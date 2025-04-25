@@ -31,19 +31,24 @@ const userSchema = new mongoose.Schema(
       required: true,
       minLength: 6,
     },
-    phone: {
-      type: String,
-      required: true,
-      match: [/^\d{10}$/, 'Invalid phone number'],
+    age: {
+      type: Number,
+      min: 18,
     },
     gender: {
       type: String,
-      required: true,
       validate(value) {
         if (!['male', 'female', 'other'].includes(value.toLowerCase())) {
           throw new Error('Invalid gender: ' + value.toLowerCase());
         }
       },
+    },
+    about: {
+      type: String,
+      default: 'This is a default about of the user!',
+    },
+    skills: {
+      type: [String],
     },
   },
   {
