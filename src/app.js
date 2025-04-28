@@ -1,13 +1,12 @@
 const express = require('express');
-
 const connectDB = require('./config/database');
 const bcrypt = require('bcrypt');
+const validator = require('validator');
+const User = require('./models/userModel');
+const { validateSignupData } = require('./utils/validation');
 
 const app = express();
 const port = 5000;
-
-const User = require('./models/userModel');
-const { validateSignupData } = require('./utils/validation');
 
 app.use(express.json());
 
@@ -33,9 +32,28 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    if (!validator.isEmail(email)) {
+      throw new Error('Invalid email format!');
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error('Invalid Credentials!');
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new Error('Invalid Credentials!');
+    }
+    res.send('Login successful!');
+  } catch (error) {
+    res.status(500).send('ERROR : ' + error.message);
+  }
+});
+
 app.get('/user', async (req, res) => {
   const userEmail = req.body.email;
-  console.log('userEmail', userEmail);
   try {
     const users = await User.find({ email: userEmail });
     res.send(users);
