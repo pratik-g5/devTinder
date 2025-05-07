@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const validator = require('validator');
 const User = require('./models/userModel');
 const { validateSignupData } = require('./utils/validation');
+const { userAuth } = require('./middlewares/auth');
 
 const app = express();
 const port = 5000;
@@ -42,12 +43,15 @@ app.post('/login', async (req, res) => {
       throw new Error('Invalid email format!');
     }
     const user = await User.findOne({ email });
+
     if (!user) {
       throw new Error('Invalid Credentials!');
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    const isPasswordValid = await user.validatePassword(password);
+
     if (isPasswordValid) {
-      const token = await jwt.sign({ _id: user._id }, 'DEV@Tinder3105');
+      const token = await user.getJWT();
       res.cookie('token', token);
       res.send('Login successful!');
     } else {
@@ -58,75 +62,12 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.get('/profile', async (req, res) => {
+app.get('/profile', userAuth, async (req, res) => {
   try {
-    const token = req.cookies.token;
-    if (!token) {
-      throw new Error('Unauthorized!');
-    }
-    const decoded = jwt.verify(token, 'DEV@Tinder3105');
-    const userId = decoded._id;
-    const user = await User.findOne({ _id: userId });
+    const user = req.user;
     res.send(user);
   } catch (error) {
-    return res.status(401).send('ERROR : ' + error.message);
-  }
-});
-
-app.get('/user', async (req, res) => {
-  const userEmail = req.body.email;
-  try {
-    const users = await User.find({ email: userEmail });
-    res.send(users);
-  } catch (error) {
-    res.status(500).send('Error fetching users ' + error.message);
-  }
-});
-
-app.get('/users', async (req, res) => {
-  try {
-    const users = await User.find();
-    res.send(users);
-  } catch (error) {
-    res.status(500).send('Error fetching users ' + error.message);
-  }
-});
-
-app.patch('/user', async (req, res) => {
-  const data = req.body;
-  const userId = req.body.userId;
-  try {
-    const ALLOWED_UPDATES = [
-      'userId',
-      'firstName',
-      'lastName',
-      'gender',
-      'skills',
-      'about',
-      'age',
-    ];
-    const isUpdateAllowed = Object.keys(data).every((update) =>
-      ALLOWED_UPDATES.includes(update)
-    );
-    if (!isUpdateAllowed) {
-      return res.status(400).send('Update not allowed!');
-    }
-    await User.findOneAndUpdate({ _id: userId }, data, {
-      runValidators: true,
-    });
-    res.send('User updated successfully');
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-});
-
-app.delete('/user', async (req, res) => {
-  const userId = req.body.userId;
-  try {
-    await User.findByIdAndDelete(userId);
-    res.send('User deleted successfully');
-  } catch (error) {
-    res.status(500).send('Error deleting user ' + error.message);
+    res.status(401).send('ERROR : ' + error.message);
   }
 });
 
