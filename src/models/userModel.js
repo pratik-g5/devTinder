@@ -39,11 +39,15 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      validate(value) {
-        if (!['male', 'female', 'other'].includes(value.toLowerCase())) {
-          throw new Error('Invalid gender: ' + value.toLowerCase());
-        }
+      enum: {
+        values: ['male', 'female'],
+        message: '{VALUE} is not supported type',
       },
+      // validate(value) {
+      //   if (!['male', 'female', 'other'].includes(value.toLowerCase())) {
+      //     throw new Error('Invalid gender: ' + value.toLowerCase());
+      //   }
+      // },
     },
     about: {
       type: String,
