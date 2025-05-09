@@ -4,6 +4,7 @@ const requestSchema = mongoose.Schema(
   {
     fromUserId: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     toUserId: {
@@ -13,7 +14,7 @@ const requestSchema = mongoose.Schema(
     status: {
       type: String,
       enum: {
-        values: ['ignored', 'interested'],
+        values: ['ignored', 'interested', 'accepted', 'rejected'],
         Message: '{VALUE} is not supported type',
       },
     },
@@ -25,7 +26,7 @@ const requestSchema = mongoose.Schema(
 
 requestSchema.index({ fromUserId: 1, toUserId: 1 });
 
-requestSchema.pre('save', function () {
+requestSchema.pre('save', function (next) {
   const connectionRequest = this;
   if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
     throw new Error('You cannot send a request to yourself!');

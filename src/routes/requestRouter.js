@@ -14,9 +14,8 @@ requestRouter.post(
     try {
       const ALLOWED_STATUS = ['ignored', 'interested'];
 
-      const toUserId = req.params.toUserId;
+      const { toUserId, status } = req.params;
       const fromUserId = req.user._id;
-      const status = req.params.status;
 
       if (!ALLOWED_STATUS.includes(status)) {
         throw new Error('Invalid status type!');
@@ -51,6 +50,45 @@ requestRouter.post(
       res.json({
         message: 'Request sent successfully!',
         request: savedRequest,
+      });
+    } catch (err) {
+      res.status(500).send('ERROR : ' + err.message);
+    }
+  }
+);
+
+requestRouter.post(
+  '/request/review/:status/:requestId',
+  userAuth,
+  async (req, res) => {
+    try {
+      const loggedInuser = req.user;
+
+      const ALLOWED_STATUS = ['accepted', 'rejected'];
+      const { status, requestId } = req.params;
+
+      if (!ALLOWED_STATUS.includes(status)) {
+        throw new Error('Invalid status type!');
+      }
+      if (!ObjectId.isValid(requestId)) {
+        throw new Error('Invalid request Id!');
+      }
+
+      const connectionRequest = await ConnectionRequest.findOne({
+        _id: requestId,
+        toUserId: loggedInuser._id,
+        status: 'interested',
+      });
+
+      if (!connectionRequest) {
+        throw new Error('Connection Request not found!');
+      }
+
+      connectionRequest.status = status;
+      const updatedRequest = await connectionRequest.save();
+      res.json({
+        message: 'Request status updated successfully!',
+        request: updatedRequest,
       });
     } catch (err) {
       res.status(500).send('ERROR : ' + err.message);
