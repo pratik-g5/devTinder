@@ -87,7 +87,7 @@ requestRouter.post(
       connectionRequest.status = status;
       const updatedRequest = await connectionRequest.save();
       res.json({
-        message: 'Request status updated successfully!',
+        message: `Request ${status} !`,
         request: updatedRequest,
       });
     } catch (err) {

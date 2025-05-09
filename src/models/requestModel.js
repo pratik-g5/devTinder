@@ -9,6 +9,7 @@ const requestSchema = mongoose.Schema(
     },
     toUserId: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     status: {
