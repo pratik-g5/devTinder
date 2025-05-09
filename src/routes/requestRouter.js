@@ -3,6 +3,9 @@ const express = require('express');
 const requestRouter = express.Router();
 const ConnectionRequest = require('../models/requestModel');
 const { userAuth } = require('../middlewares/auth');
+const User = require('../models/userModel');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 requestRouter.post(
   '/request/send/:status/:toUserId',
@@ -17,6 +20,15 @@ requestRouter.post(
 
       if (!ALLOWED_STATUS.includes(status)) {
         throw new Error('Invalid status type!');
+      }
+
+      if (!ObjectId.isValid(toUserId)) {
+        throw new Error('Invalid user Id!');
+      }
+
+      const toUserInfo = await User.findById(toUserId);
+      if (!toUserInfo) {
+        throw new Error('User not found!');
       }
 
       const connectionRequest = new ConnectionRequest({
