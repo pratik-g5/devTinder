@@ -4,7 +4,7 @@ const ConnectionRequest = require('../models/requestModel');
 const User = require('../models/userModel');
 const userRouter = express.Router();
 
-const USER_DATA = 'firstName lastName age gender skills';
+const USER_DATA = 'firstName lastName age gender skills photoUrl about';
 
 userRouter.get('/user/requests/received', userAuth, async (req, res) => {
   try {

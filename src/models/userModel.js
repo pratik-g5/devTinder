@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       enum: {
-        values: ['male', 'female'],
+        values: ['male', 'female', 'other'],
         message: '{VALUE} is not supported type',
       },
       // validate(value) {
@@ -58,6 +58,8 @@ const userSchema = new mongoose.Schema(
     },
     photoUrl: {
       type: String,
+      default:
+        'https://t4.ftcdn.net/jpg/04/83/90/95/360_F_483909569_OI4LKNeFgHwvvVju60fejLd9gj43dIcd.jpg',
     },
   },
   {
