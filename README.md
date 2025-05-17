@@ -14,7 +14,6 @@ DevTinder is a full-featured Node.js + Express.js backend designed to mimic a Ti
 - Create, update, and fetch developer profiles
 - Connection request & mutual match system
 - Feed-based discovery of other devs
-- Input validation using `validator.js`
 - Centralized error handling middleware
 - Pagination & filtering support for scalable endpoints
 
@@ -25,7 +24,6 @@ DevTinder is a full-featured Node.js + Express.js backend designed to mimic a Ti
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB (via Mongoose)
 - **Authentication:** JWT, Bcrypt, Cookies
-- **Validation:** validator.js
 - **Development Tools:** Nodemon, Postman
 
 ---
@@ -36,3 +34,4 @@ DevTinder is a full-featured Node.js + Express.js backend designed to mimic a Ti
 git clone https://github.com/your-username/devtinder-api.git
 cd devTinder
 npm install
+```
