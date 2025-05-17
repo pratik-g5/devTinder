@@ -59,7 +59,9 @@ profileRouter.post('/profile/password', userAuth, async (req, res) => {
     );
 
     const token = await req.user.getJWT();
-    res.cookie('token', token).send('Password updated successfully!');
+    res
+      .cookie('token', token)
+      .send({ message: 'Password updated successfully!', user: req.user });
   } catch (err) {
     res.status(401).send('ERROR : ' + err.message);
   }
